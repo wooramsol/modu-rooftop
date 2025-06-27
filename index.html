@@ -80,17 +80,21 @@
     }
   
     let userPosition = null;
+    let userCircle = null;
 
     function updateMarkerStyles() {
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const color = distance <= 1000 ? "#000" : "#777";
-        marker.setImage(new kakao.maps.MarkerImage(
-          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
-          new kakao.maps.Size(32, 32),
-          { offset: new kakao.maps.Point(16, 32) }
-        ));
+        const imageSrc = distance <= 1000
+          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
+          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          new kakao.maps.Size(24, 35),
+          { offset: new kakao.maps.Point(12, 35) }
+        );
+        marker.setImage(markerImage);
       });
     }
 
@@ -98,9 +102,9 @@
       navigator.geolocation.getCurrentPosition(function(position) {
         userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        const circle = new kakao.maps.Circle({
+        userCircle = new kakao.maps.Circle({
           center: userPosition,
-          radius: 500,
+          radius: 1000,
           strokeWeight: 2,
           strokeColor: '#00f',
           strokeOpacity: 0.8,
@@ -108,7 +112,7 @@
           fillOpacity: 0.1,
           zIndex: 10
         });
-        circle.setMap(map);
+        userCircle.setMap(map);
         map.setCenter(userPosition);
 
         updateMarkerStyles();
@@ -138,17 +142,21 @@
     }
   
     let userPosition = null;
+    let userCircle = null;
 
     function updateMarkerStyles() {
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const color = distance <= 1000 ? "#000" : "#777";
-        marker.setImage(new kakao.maps.MarkerImage(
-          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
-          new kakao.maps.Size(32, 32),
-          { offset: new kakao.maps.Point(16, 32) }
-        ));
+        const imageSrc = distance <= 1000
+          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
+          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          new kakao.maps.Size(24, 35),
+          { offset: new kakao.maps.Point(12, 35) }
+        );
+        marker.setImage(markerImage);
       });
     }
 
@@ -156,9 +164,9 @@
       navigator.geolocation.getCurrentPosition(function(position) {
         userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        const circle = new kakao.maps.Circle({
+        userCircle = new kakao.maps.Circle({
           center: userPosition,
-          radius: 500,
+          radius: 1000,
           strokeWeight: 2,
           strokeColor: '#00f',
           strokeOpacity: 0.8,
@@ -166,7 +174,7 @@
           fillOpacity: 0.1,
           zIndex: 10
         });
-        circle.setMap(map);
+        userCircle.setMap(map);
         map.setCenter(userPosition);
 
         updateMarkerStyles();
@@ -196,17 +204,21 @@
     }
   
     let userPosition = null;
+    let userCircle = null;
 
     function updateMarkerStyles() {
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const color = distance <= 1000 ? "#000" : "#777";
-        marker.setImage(new kakao.maps.MarkerImage(
-          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
-          new kakao.maps.Size(32, 32),
-          { offset: new kakao.maps.Point(16, 32) }
-        ));
+        const imageSrc = distance <= 1000
+          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
+          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          new kakao.maps.Size(24, 35),
+          { offset: new kakao.maps.Point(12, 35) }
+        );
+        marker.setImage(markerImage);
       });
     }
 
@@ -214,9 +226,9 @@
       navigator.geolocation.getCurrentPosition(function(position) {
         userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        const circle = new kakao.maps.Circle({
+        userCircle = new kakao.maps.Circle({
           center: userPosition,
-          radius: 500,
+          radius: 1000,
           strokeWeight: 2,
           strokeColor: '#00f',
           strokeOpacity: 0.8,
@@ -224,7 +236,7 @@
           fillOpacity: 0.1,
           zIndex: 10
         });
-        circle.setMap(map);
+        userCircle.setMap(map);
         map.setCenter(userPosition);
 
         updateMarkerStyles();
@@ -339,17 +351,21 @@
     }
   
     let userPosition = null;
+    let userCircle = null;
 
     function updateMarkerStyles() {
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const color = distance <= 1000 ? "#000" : "#777";
-        marker.setImage(new kakao.maps.MarkerImage(
-          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
-          new kakao.maps.Size(32, 32),
-          { offset: new kakao.maps.Point(16, 32) }
-        ));
+        const imageSrc = distance <= 1000
+          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
+          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          new kakao.maps.Size(24, 35),
+          { offset: new kakao.maps.Point(12, 35) }
+        );
+        marker.setImage(markerImage);
       });
     }
 
@@ -357,9 +373,9 @@
       navigator.geolocation.getCurrentPosition(function(position) {
         userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        const circle = new kakao.maps.Circle({
+        userCircle = new kakao.maps.Circle({
           center: userPosition,
-          radius: 500,
+          radius: 1000,
           strokeWeight: 2,
           strokeColor: '#00f',
           strokeOpacity: 0.8,
@@ -367,7 +383,7 @@
           fillOpacity: 0.1,
           zIndex: 10
         });
-        circle.setMap(map);
+        userCircle.setMap(map);
         map.setCenter(userPosition);
 
         updateMarkerStyles();

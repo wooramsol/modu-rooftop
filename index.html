@@ -83,6 +83,7 @@
     let userCircle = null;
 
     function updateMarkerStyles() {
+      if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
@@ -95,6 +96,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
+        marker.setMap(map); // 항상 지도에 마커 표시
       });
     }
 
@@ -145,6 +147,7 @@
     let userCircle = null;
 
     function updateMarkerStyles() {
+      if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
@@ -157,6 +160,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
+        marker.setMap(map); // 항상 지도에 마커 표시
       });
     }
 
@@ -207,6 +211,7 @@
     let userCircle = null;
 
     function updateMarkerStyles() {
+      if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
@@ -219,6 +224,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
+        marker.setMap(map); // 항상 지도에 마커 표시
       });
     }
 
@@ -300,6 +306,7 @@
           openModal(v.comment, key);
         });
         markerObjs[key] = marker;
+        marker.setMap(map);
         if (userPosition) updateMarkerStyles();
       });
     });
@@ -354,6 +361,7 @@
     let userCircle = null;
 
     function updateMarkerStyles() {
+      if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
@@ -366,6 +374,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
+        marker.setMap(map); // 항상 지도에 마커 표시
       });
     }
 

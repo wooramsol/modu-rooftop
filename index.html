@@ -1,80 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
-  <title>모두의 옥상</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>모두의옥상 v1.0</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
-      background: #000;
-      color: #fff;
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
+      background: #000; color: #fff;
+      overflow: hidden;
     }
-
-    #map {
-      width: 100%;
-      height: 100%;
-      filter: grayscale(1);
+    #map { width: 100%; height: 100%; filter: grayscale(1); }
+    #header {
+      position: absolute; top: 0; width: 100%; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+      font-size: 17px; font-weight: 600; z-index: 999;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-
-    .overlay {
-      position: absolute;
-      background: #111;
-      border: 1px solid #444;
-      padding: 10px;
-      z-index: 10;
-      width: 200px;
+    .marker-icon {
+      width: 32px; height: 32px;
+      background: white; border-radius: 50%;
+      border: 2px solid #000; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transform: translate(-16px, -32px);
     }
-
-    .overlay textarea {
-      width: 100%;
-      background: #222;
-      color: #fff;
-      border: 1px solid #555;
-      margin-top: 5px;
+    #modal {
+      position: absolute; bottom: -100%; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 360px; background: #111; border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.5); padding: 16px;
+      transition: bottom 0.3s ease-out; z-index: 1000;
+      display: flex; flex-direction: column;
     }
-
-    .overlay button {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 5px;
-      margin-top: 5px;
+    #modal.show { bottom: 0; }
+    #modal textarea {
+      width: 100%; background: #000; color: #fff;
+      border: 1px solid #444; border-radius: 8px; padding: 8px;
+      resize: none; font-size: 14px;
+    }
+    #modal .buttons {
+      display: flex; gap: 8px; margin-top: 12px;
+    }
+    #modal button {
+      flex: 1; padding: 10px; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
       cursor: pointer;
     }
-
-    #title {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: white;
-      z-index: 100;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
+    button.save { background: #fff; color: #000; }
+    button.delete { background: #f55; color: #fff; }
+    button.cancel { background: #333; color: #fff; }
   </style>
-
-  <!-- 카카오맵 -->
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42"></script>
-
-  <!-- Firebase SDKs (compat 버전 사용) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
-
 <body>
+  <div id="header">모두의옥상 v1.0</div>
   <div id="map"></div>
-  <div id="title">모두의옥상 v1.0</div>
-
+  <div id="modal">
+    <textarea id="comment" rows="4" placeholder="옥상에 대한 설명을 입력해주세요"></textarea>
+    <div class="buttons">
+      <button class="save" onclick="onSave()">저장</button>
+      <button class="delete" onclick="onDelete()">삭제</button>
+      <button class="cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
   <script>
-    // ✅ Firebase 설정
     const firebaseConfig = {
       apiKey: "AIzaSyCq0HfajMY_GpKQ_KsdSNJmOy99PY97O2A",
       authDomain: "modulooptop.firebaseapp.com",
@@ -85,94 +79,65 @@
       appId: "1:901771492678:web:23b0cc4478cade894ab947",
       measurementId: "G-XYRMLJ98QC"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const ref = db.ref("markers");
+    const db = firebase.database().ref("markers");
 
     const map = new kakao.maps.Map(document.getElementById("map"), {
-      center: new kakao.maps.LatLng(37.5665, 126.9780),
-      level: 5
+      center: new kakao.maps.LatLng(37.5665,126.9780), level: 5
     });
 
-    kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-      const latlng = mouseEvent.latLng;
-      const projection = map.getProjection();
-      const coord = projection.containerPointFromCoords(latlng);
-      openForm(latlng, null, null, coord.x, coord.y);
+    let activeKey = null, currentCoords = null;
+    const markerObjs = {};
+
+    map.addListener('click', (e) => {
+      currentCoords = e.latLng;
+      openModal(null);
     });
 
-    function openForm(latlng, existing = null, key = null, x = 100, y = 100) {
-      closeForm();
-      const form = document.createElement("div");
-      form.className = "overlay";
-
-      const maxX = window.innerWidth - 220;
-      const maxY = window.innerHeight - 220;
-      const posX = Math.min(x, maxX);
-      const posY = Math.min(y, maxY);
-
-      form.style.left = posX + "px";
-      form.style.top = posY + "px";
-
-      form.innerHTML = `
-        <textarea id="comment" rows="4" placeholder="옥상에 대한 설명을 입력해주세요">${existing ? existing.comment : ""}</textarea>
-        <button onclick="saveMarker(${latlng.getLat()}, ${latlng.getLng()}, '${key || ''}')">저장</button>
-        ${key ? `<button onclick="deleteMarker('${key}')">삭제</button>` : ""}
-        <button onclick="closeForm()">닫기</button>
-      `;
-      document.body.appendChild(form);
-    }
-
-    function closeForm() {
-      const old = document.querySelector(".overlay");
-      if (old) old.remove();
-    }
-
-    function saveMarker(lat, lng, key = "") {
-      const comment = document.getElementById("comment").value;
-      if (!comment.trim()) return;
-      const markerData = { lat, lng, comment };
-
-      if (key) {
-        ref.child(key).set(markerData);
-      } else {
-        ref.push(markerData);
-      }
-
-      closeForm();
-    }
-
-    function deleteMarker(key) {
-      if (confirm("정말 삭제하시겠습니까?")) {
-        ref.child(key).remove();
-        closeForm();
-      }
-    }
-
-    const markerObjects = {};
-
-    function renderMarkers(data) {
-      Object.values(markerObjects).forEach(m => m.setMap(null));
-      Object.keys(markerObjects).forEach(k => delete markerObjects[k]);
-
-      for (const [key, value] of Object.entries(data || {})) {
-        const position = new kakao.maps.LatLng(value.lat, value.lng);
-        const marker = new kakao.maps.Marker({ map, position });
-
-        kakao.maps.event.addListener(marker, "click", () => {
-          const coord = map.getProjection().containerPointFromCoords(position);
-          openForm(position, value, key, coord.x, coord.y);
+    db.on('value', snap => {
+      const data = snap.val() || {};
+      for(const m of Object.values(markerObjs)) m.setMap(null);
+      Object.keys(markerObjs).forEach(k=> delete markerObjs[k]);
+      Object.entries(data).forEach(([key,v]) => {
+        const marker = new kakao.maps.CustomOverlay({
+          position: new kakao.maps.LatLng(v.lat, v.lng),
+          content: `<div class="marker-icon"></div>`,
+          clickable: true
         });
-
-        markerObjects[key] = marker;
-      }
-    }
-
-    ref.on("value", (snapshot) => {
-      renderMarkers(snapshot.val());
+        marker.setMap(map);
+        markerObjs[key] = marker;
+        marker.getContent().addEventListener('click', () => {
+          currentCoords = marker.getPosition();
+          openModal(v.comment, key);
+        });
+      });
     });
+
+    function openModal(text, key){
+      activeKey = key;
+      document.getElementById('comment').value = text || '';
+      document.getElementById('modal').classList.add('show');
+    }
+    function closeModal(){
+      document.getElementById('modal').classList.remove('show');
+      activeKey = null;
+    }
+    function onSave(){
+      const txt = document.getElementById('comment').value.trim();
+      if(!txt) return alert('설명을 입력해주세요');
+      const pos = currentCoords;
+      const data = { lat: pos.getLat(), lng: pos.getLng(), comment: txt };
+      if(activeKey) db.child(activeKey).set(data);
+      else db.push(data);
+      closeModal();
+    }
+    function onDelete(){
+      if(activeKey && confirm('삭제할까요?')) db.child(activeKey).remove();
+      closeModal();
+    }
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js').catch(console.error);
+    }
   </script>
 </body>
-
 </html>

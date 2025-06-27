@@ -36,6 +36,9 @@
     }
     #modal.show { bottom: 0; }
     #modal textarea {
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0;
       height: 80px;
       line-height: 1.4;
       width: 100%; background: #000; color: #fff;
@@ -56,9 +59,69 @@
     button.delete { background: #f55; color: #fff; }
     button.cancel { background: #333; color: #fff; }
   </style>
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
 </head>
 <body>
   <div id="header">모두의옥상 v1.0</div>
@@ -143,6 +206,26 @@
     if('serviceWorker' in navigator){
       navigator.serviceWorker.register('sw.js').catch(console.error);
     }
+  
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
   </script>
+
 </body>
 </html>

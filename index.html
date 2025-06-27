@@ -2,71 +2,139 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>모두의옥상 v1.0</title>
   <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #000;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 0; height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
+      background: #000; color: #fff;
+      overflow: hidden;
     }
+    #map { width: 100%; height: 100%; filter: grayscale(1); }
     #header {
-      position: fixed;
-      top: 0;
+      z-index: 9999;
+      position: absolute; top: 0; width: 100%; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+      font-size: 17px; font-weight: 600; z-index: 999;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #modal {
+      max-width: 360px;
+      width: 90vw;
+      left: 50%;
+      transform: translateX(-50%);
+      position: absolute; bottom: -100%; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 360px; background: #111; border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.5); padding: 16px;
+      transition: bottom 0.3s ease-out; z-index: 1000;
+      display: flex; flex-direction: column;
+    }
+    #modal.show { bottom: 0; }
+    #modal textarea {
+      box-sizing: border-box;
       width: 100%;
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 12px;
-      font-size: 16px;
-      z-index: 10;
+      margin: 0;
+      height: 80px;
+      line-height: 1.4;
+      width: 100%; background: #000; color: #fff;
+      border: 1px solid #444; border-radius: 8px; padding: 8px;
+      resize: none; font-size: 14px;
     }
-    #map {
-      width: 100%;
-      height: 100%;
+    #modal .buttons {
+      display: flex; gap: 8px; margin-top: 12px;
     }
-    #inputBox {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #111;
-      display: flex;
-      padding: 10px;
-      z-index: 10;
-    }
-    #commentInput {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      font-size: 14px;
-    }
-    #saveBtn {
-      padding: 8px 12px;
-      background: #fff;
-      color: #000;
-      border: none;
-      margin-left: 6px;
+    #modal button {
+      padding: 10px 0;
+      border-radius: 10px;
+      flex: 1; padding: 10px; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
       cursor: pointer;
     }
+    button.save { background: #fff; color: #000; }
+    button.delete { background: #f55; color: #fff; }
+    button.cancel { background: #333; color: #fff; }
   </style>
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
+      });
+    }
+  </script>
+
 </head>
 <body>
   <div id="header">모두의옥상 v1.0</div>
   <div id="map"></div>
-  <div id="inputBox">
-    <input type="text" id="commentInput" placeholder="이 옥상에서 어떤 풍경이 보이나요?" />
-    <button id="saveBtn" onclick="saveComment()">저장</button>
-  </div>
 
-  <!-- Firebase (non-module) -->
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
-  <!-- Kakao Map -->
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42&libraries=services"></script>
+  <div id="modal">
+    <textarea id="comment" rows="4" placeholder="옥상에 대한 설명을 입력해주세요"></textarea>
+    <div class="buttons">
+      <button class="save" onclick="onSave()">저장</button>
+      <button class="delete" onclick="onDelete()">삭제</button>
+      <button class="cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -74,80 +142,90 @@
       authDomain: "modulooptop.firebaseapp.com",
       databaseURL: "https://modulooptop-default-rtdb.firebaseio.com",
       projectId: "modulooptop",
-      storageBucket: "modulooptop.appspot.com",
+      storageBucket: "modulooptop.firebasestorage.app",
       messagingSenderId: "901771492678",
-      appId: "1:901771492678:web:23b0cc4478cade894ab947"
+      appId: "1:901771492678:web:23b0cc4478cade894ab947",
+      measurementId: "G-XYRMLJ98QC"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db = firebase.database().ref("markers");
 
-    let map, userLatLng = null, userMarker, userCircle;
-    const markers = [];
+    const map = new kakao.maps.Map(document.getElementById("map"), {
+      center: new kakao.maps.LatLng(37.5665,126.9780), level: 5
+    });
 
-    function initMap() {
-      const fallbackLatLng = new kakao.maps.LatLng(37.5665, 126.9780); // 서울시청
-      map = new kakao.maps.Map(document.getElementById('map'), {
-        center: fallbackLatLng,
-        level: 5
-      });
+    let activeKey = null, currentCoords = null;
+    const markerObjs = {};
 
-      // Try to get user location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          userLatLng = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-          map.setCenter(userLatLng);
-          userMarker = new kakao.maps.Marker({ position: userLatLng });
-          userMarker.setMap(map);
+    map.addListener('click', (e) => {
+      currentCoords = e.latLng;
+      openModal(null);
+    });
 
-          userCircle = new kakao.maps.Circle({
-            center: userLatLng,
-            radius: 1000,
-            strokeWeight: 1,
-            strokeColor: '#fff',
-            strokeOpacity: 0.8,
-            fillColor: '#444',
-            fillOpacity: 0.3
-          });
-          userCircle.setMap(map);
-        });
-      }
+    db.on('value', snap => {
+      const data = snap.val() || {};
+      Object.values(markerObjs).forEach(m => m.setMap(null));
+      Object.keys(markerObjs).forEach(k => delete markerObjs[k]);
 
-      loadMarkers();
-    }
-
-    function loadMarkers() {
-      const markerRef = db.ref("markers/");
-      markerRef.on("child_added", snapshot => {
-        const { lat, lng, comment } = snapshot.val();
-        const markerPos = new kakao.maps.LatLng(lat, lng);
+      Object.entries(data).forEach(([key, v]) => {
         const marker = new kakao.maps.Marker({
-          position: markerPos,
-          map: map,
-          opacity: userLatLng ? (kakao.maps.services.Util.getDistance(userLatLng, markerPos) <= 1000 ? 1 : 0.3) : 1
+          map,
+          position: new kakao.maps.LatLng(v.lat, v.lng),
         });
-        markers.push(marker);
+        kakao.maps.event.addListener(marker, 'click', () => {
+          currentCoords = marker.getPosition();
+          openModal(v.comment, key);
+        });
+        markerObjs[key] = marker;
+      });
+    });
+
+    function openModal(text, key){
+      activeKey = key;
+      document.getElementById('comment').value = text || '';
+      document.getElementById('modal').classList.add('show');
+    }
+    function closeModal(){
+      document.getElementById('modal').classList.remove('show');
+      activeKey = null;
+    }
+    function onSave(){
+      const txt = document.getElementById('comment').value.trim();
+      if(!txt) return alert('설명을 입력해주세요');
+      const pos = currentCoords;
+      const data = { lat: pos.getLat(), lng: pos.getLng(), comment: txt };
+      if(activeKey) db.child(activeKey).set(data);
+      else db.push(data);
+      closeModal();
+    }
+    function onDelete(){
+      if(activeKey && confirm('삭제할까요?')) db.child(activeKey).remove();
+      closeModal();
+    }
+
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js').catch(console.error);
+    }
+  
+    // 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        const circle = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 20,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.3,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(currentPos);
       });
     }
-
-    function saveComment() {
-      const comment = document.getElementById("commentInput").value;
-      if (!userLatLng || !comment) return;
-      db.ref("markers/").push({
-        lat: userLatLng.getLat(),
-        lng: userLatLng.getLng(),
-        comment: comment
-      });
-      document.getElementById("commentInput").value = "";
-    }
-
-    window.onload = initMap;
-    window.saveComment = saveComment;
   </script>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
 </body>
 </html>

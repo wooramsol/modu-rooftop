@@ -85,6 +85,7 @@
     function updateMarkerStyles() {
       if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
+        if (!marker) return;
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
         const imageSrc = distance <= 1000
@@ -96,7 +97,6 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map);
       });
     }
 
@@ -149,6 +149,7 @@
     function updateMarkerStyles() {
       if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
+        if (!marker) return;
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
         const imageSrc = distance <= 1000
@@ -160,7 +161,6 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map);
       });
     }
 
@@ -213,6 +213,7 @@
     function updateMarkerStyles() {
       if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
+        if (!marker) return;
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
         const imageSrc = distance <= 1000
@@ -224,7 +225,6 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map);
       });
     }
 
@@ -306,10 +306,23 @@
           openModal(v.comment, key);
         });
         markerObjs[key] = marker;
-        marker.setMap(map);
+        marker.setMap(map); // 무조건 지도에 표시
+
+        // 색상 구분 처리
         if (userPosition) {
-          updateMarkerStyles();
+          const pos = marker.getPosition();
+          const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
+          const imageSrc = distance <= 1000
+            ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
+            : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
+          const markerImage = new kakao.maps.MarkerImage(
+            imageSrc,
+            new kakao.maps.Size(24, 35),
+            { offset: new kakao.maps.Point(12, 35) }
+          );
+          marker.setImage(markerImage);
         } else {
+          // userPosition 없으면 검정색으로 기본 설정
           const defaultImage = new kakao.maps.MarkerImage(
             "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png",
             new kakao.maps.Size(24, 35),
@@ -373,6 +386,7 @@
     function updateMarkerStyles() {
       if (!userPosition) return;
       Object.entries(markerObjs).forEach(([key, marker]) => {
+        if (!marker) return;
         const pos = marker.getPosition();
         const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
         const imageSrc = distance <= 1000
@@ -384,7 +398,6 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map);
       });
     }
 

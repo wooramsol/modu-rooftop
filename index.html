@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>모두의옥상 v1.0</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%;
@@ -16,17 +16,12 @@
     }
     #map { width: 100%; height: 100%; filter: grayscale(1); }
     #header {
+      z-index: 9999;
       position: absolute; top: 0; width: 100%; height: 56px;
       display: flex; align-items: center; justify-content: center;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
       font-size: 17px; font-weight: 600; z-index: 999;
       border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .marker-icon {
-      width: 32px; height: 32px;
-      background: white; border-radius: 50%;
-      border: 2px solid #000; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      transform: translate(-16px, -32px);
     }
     #modal {
       position: absolute; bottom: -100%; left: 50%; transform: translateX(-50%);
@@ -60,6 +55,7 @@
 <body>
   <div id="header">모두의옥상 v1.0</div>
   <div id="map"></div>
+
   <div id="modal">
     <textarea id="comment" rows="4" placeholder="옥상에 대한 설명을 입력해주세요"></textarea>
     <div class="buttons">
@@ -68,6 +64,7 @@
       <button class="cancel" onclick="closeModal()">취소</button>
     </div>
   </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCq0HfajMY_GpKQ_KsdSNJmOy99PY97O2A",
@@ -96,20 +93,19 @@
 
     db.on('value', snap => {
       const data = snap.val() || {};
-      for(const m of Object.values(markerObjs)) m.setMap(null);
-      Object.keys(markerObjs).forEach(k=> delete markerObjs[k]);
-      Object.entries(data).forEach(([key,v]) => {
-        const marker = new kakao.maps.CustomOverlay({
+      Object.values(markerObjs).forEach(m => m.setMap(null));
+      Object.keys(markerObjs).forEach(k => delete markerObjs[k]);
+
+      Object.entries(data).forEach(([key, v]) => {
+        const marker = new kakao.maps.Marker({
+          map,
           position: new kakao.maps.LatLng(v.lat, v.lng),
-          content: `<div class="marker-icon"></div>`,
-          clickable: true
         });
-        marker.setMap(map);
-        markerObjs[key] = marker;
-        marker.getContent().addEventListener('click', () => {
+        kakao.maps.event.addListener(marker, 'click', () => {
           currentCoords = marker.getPosition();
           openModal(v.comment, key);
         });
+        markerObjs[key] = marker;
       });
     });
 
@@ -135,6 +131,7 @@
       if(activeKey && confirm('삭제할까요?')) db.child(activeKey).remove();
       closeModal();
     }
+
     if('serviceWorker' in navigator){
       navigator.serviceWorker.register('sw.js').catch(console.error);
     }

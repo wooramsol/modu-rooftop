@@ -60,7 +60,7 @@
     button.cancel { background: #333; color: #fff; }
   </style>
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42">
-    // 현재 위치 표시 및 실시간 반경 원
+    // 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -75,24 +75,25 @@
           zIndex: 10
         });
         circle.setMap(map);
-        map.setCenter(currentPos);
 
-        // 1km 반경 원
-        const boundary = new kakao.maps.Circle({
+        // 1km 반경 원 추가
+        const areaCircle = new kakao.maps.Circle({
           center: currentPos,
           radius: 1000,
           strokeWeight: 0,
-          fillColor: "#fff",
-          fillOpacity: 0.07,
-          zIndex: 5
+          fillColor: '#ffffff',
+          fillOpacity: 0.2,
+          zIndex: 0 // 마커 아래
         });
-        boundary.setMap(map);
+        areaCircle.setMap(map);
+
+        map.setCenter(currentPos);
       });
     }
   </script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
-    // 현재 위치 표시 및 실시간 반경 원
+    // 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -107,24 +108,25 @@
           zIndex: 10
         });
         circle.setMap(map);
-        map.setCenter(currentPos);
 
-        // 1km 반경 원
-        const boundary = new kakao.maps.Circle({
+        // 1km 반경 원 추가
+        const areaCircle = new kakao.maps.Circle({
           center: currentPos,
           radius: 1000,
           strokeWeight: 0,
-          fillColor: "#fff",
-          fillOpacity: 0.07,
-          zIndex: 5
+          fillColor: '#ffffff',
+          fillOpacity: 0.2,
+          zIndex: 0 // 마커 아래
         });
-        boundary.setMap(map);
+        areaCircle.setMap(map);
+
+        map.setCenter(currentPos);
       });
     }
   </script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
-    // 현재 위치 표시 및 실시간 반경 원
+    // 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -139,18 +141,19 @@
           zIndex: 10
         });
         circle.setMap(map);
-        map.setCenter(currentPos);
 
-        // 1km 반경 원
-        const boundary = new kakao.maps.Circle({
+        // 1km 반경 원 추가
+        const areaCircle = new kakao.maps.Circle({
           center: currentPos,
           radius: 1000,
           strokeWeight: 0,
-          fillColor: "#fff",
-          fillOpacity: 0.07,
-          zIndex: 5
+          fillColor: '#ffffff',
+          fillOpacity: 0.2,
+          zIndex: 0 // 마커 아래
         });
-        boundary.setMap(map);
+        areaCircle.setMap(map);
+
+        map.setCenter(currentPos);
       });
     }
   </script>
@@ -240,7 +243,7 @@
       navigator.serviceWorker.register('sw.js').catch(console.error);
     }
   
-    // 현재 위치 표시 및 실시간 반경 원
+    // 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -255,18 +258,19 @@
           zIndex: 10
         });
         circle.setMap(map);
-        map.setCenter(currentPos);
 
-        // 1km 반경 원
-        const boundary = new kakao.maps.Circle({
+        // 1km 반경 원 추가
+        const areaCircle = new kakao.maps.Circle({
           center: currentPos,
           radius: 1000,
           strokeWeight: 0,
-          fillColor: "#fff",
-          fillOpacity: 0.07,
-          zIndex: 5
+          fillColor: '#ffffff',
+          fillOpacity: 0.2,
+          zIndex: 0 // 마커 아래
         });
-        boundary.setMap(map);
+        areaCircle.setMap(map);
+
+        map.setCenter(currentPos);
       });
     }
   </script>

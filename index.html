@@ -118,7 +118,11 @@
         map.setCenter(userPosition);
 
         updateMarkerStyles();
+      }, function(error) {
+        console.log("GPS 권한 오류:", error.message);
       });
+    } else {
+      console.log("브라우저가 geolocation을 지원하지 않음");
     }
   </script>
 
@@ -182,7 +186,11 @@
         map.setCenter(userPosition);
 
         updateMarkerStyles();
+      }, function(error) {
+        console.log("GPS 권한 오류:", error.message);
       });
+    } else {
+      console.log("브라우저가 geolocation을 지원하지 않음");
     }
   </script>
 
@@ -246,7 +254,11 @@
         map.setCenter(userPosition);
 
         updateMarkerStyles();
+      }, function(error) {
+        console.log("GPS 권한 오류:", error.message);
       });
+    } else {
+      console.log("브라우저가 geolocation을 지원하지 않음");
     }
   </script>
 
@@ -306,9 +318,11 @@
           openModal(v.comment, key);
         });
         markerObjs[key] = marker;
-        marker.setMap(map); // 무조건 지도에 표시
 
-        // 색상 구분 처리
+        // 항상 지도에 표시
+        marker.setMap(map);
+
+        // 색상 처리
         if (userPosition) {
           const pos = marker.getPosition();
           const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
@@ -322,7 +336,6 @@
           );
           marker.setImage(markerImage);
         } else {
-          // userPosition 없으면 검정색으로 기본 설정
           const defaultImage = new kakao.maps.MarkerImage(
             "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png",
             new kakao.maps.Size(24, 35),
@@ -419,7 +432,11 @@
         map.setCenter(userPosition);
 
         updateMarkerStyles();
+      }, function(error) {
+        console.log("GPS 권한 오류:", error.message);
       });
+    } else {
+      console.log("브라우저가 geolocation을 지원하지 않음");
     }
   </script>
 

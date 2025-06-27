@@ -60,100 +60,97 @@
     button.cancel { background: #333; color: #fff; }
   </style>
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42">
-    // 현재 위치 표시
+    // 현재 위치 표시 및 실시간 반경 원
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
         const circle = new kakao.maps.Circle({
-          radius: 1000,  // 1km 반경
           center: currentPos,
           radius: 20,
-          // strokeWeight: 2,
-          // strokeColor: '#00f',
-          // strokeOpacity: 0.8,
-          fillColor: '#888',
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
           fillOpacity: 0.3,
           zIndex: 10
         });
         circle.setMap(map);
         map.setCenter(currentPos);
-currentLocation = currentPos;
-if (rangeCircle) rangeCircle.setMap(null);
-rangeCircle = new kakao.maps.Circle({
-  center: currentLocation,
-  radius: 1000,
-  fillColor: '#888',
-  fillOpacity: 0.3,
-  strokeWeight: 0
-});
-rangeCircle.setMap(map);
-db.once('value');
+
+        // 1km 반경 원
+        const boundary = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 1000,
+          strokeWeight: 0,
+          fillColor: "#fff",
+          fillOpacity: 0.07,
+          zIndex: 5
+        });
+        boundary.setMap(map);
       });
     }
   </script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
-    // 현재 위치 표시
+    // 현재 위치 표시 및 실시간 반경 원
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
         const circle = new kakao.maps.Circle({
-          radius: 1000,  // 1km 반경
           center: currentPos,
           radius: 20,
-          // strokeWeight: 2,
-          // strokeColor: '#00f',
-          // strokeOpacity: 0.8,
-          fillColor: '#888',
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
           fillOpacity: 0.3,
           zIndex: 10
         });
         circle.setMap(map);
         map.setCenter(currentPos);
-currentLocation = currentPos;
-if (rangeCircle) rangeCircle.setMap(null);
-rangeCircle = new kakao.maps.Circle({
-  center: currentLocation,
-  radius: 1000,
-  fillColor: '#888',
-  fillOpacity: 0.3,
-  strokeWeight: 0
-});
-rangeCircle.setMap(map);
-db.once('value');
+
+        // 1km 반경 원
+        const boundary = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 1000,
+          strokeWeight: 0,
+          fillColor: "#fff",
+          fillOpacity: 0.07,
+          zIndex: 5
+        });
+        boundary.setMap(map);
       });
     }
   </script>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
-    // 현재 위치 표시
+    // 현재 위치 표시 및 실시간 반경 원
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
         const circle = new kakao.maps.Circle({
-          radius: 1000,  // 1km 반경
           center: currentPos,
           radius: 20,
-          // strokeWeight: 2,
-          // strokeColor: '#00f',
-          // strokeOpacity: 0.8,
-          fillColor: '#888',
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
           fillOpacity: 0.3,
           zIndex: 10
         });
         circle.setMap(map);
         map.setCenter(currentPos);
-currentLocation = currentPos;
-if (rangeCircle) rangeCircle.setMap(null);
-rangeCircle = new kakao.maps.Circle({
-  center: currentLocation,
-  radius: 1000,
-  fillColor: '#888',
-  fillOpacity: 0.3,
-  strokeWeight: 0
-});
-rangeCircle.setMap(map);
-db.once('value');
+
+        // 1km 반경 원
+        const boundary = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 1000,
+          strokeWeight: 0,
+          fillColor: "#fff",
+          fillOpacity: 0.07,
+          zIndex: 5
+        });
+        boundary.setMap(map);
       });
     }
   </script>
@@ -198,37 +195,15 @@ db.once('value');
       openModal(null);
     });
 
-    
-let currentLocation = null;
-let rangeCircle = null;
-
-db.on('value', snap => {
-
+    db.on('value', snap => {
       const data = snap.val() || {};
       Object.values(markerObjs).forEach(m => m.setMap(null));
       Object.keys(markerObjs).forEach(k => delete markerObjs[k]);
 
       Object.entries(data).forEach(([key, v]) => {
-        
-const distance = currentLocation
-  ? kakao.maps.geometry.spherical.computeDistance(
-      new kakao.maps.LatLng(v.lat, v.lng),
-      currentLocation
-    )
-  : null;
-
-const marker = new kakao.maps.Marker({
-
+        const marker = new kakao.maps.Marker({
           map,
-          
-position: new kakao.maps.LatLng(v.lat, v.lng),
-image: new kakao.maps.MarkerImage(
-  distance !== null && distance <= 1000
-    ? 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png'
-    : 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_gray.png',
-  new kakao.maps.Size(24, 35)
-),
-
+          position: new kakao.maps.LatLng(v.lat, v.lng),
         });
         kakao.maps.event.addListener(marker, 'click', () => {
           currentCoords = marker.getPosition();
@@ -265,34 +240,33 @@ image: new kakao.maps.MarkerImage(
       navigator.serviceWorker.register('sw.js').catch(console.error);
     }
   
-    // 현재 위치 표시
+    // 현재 위치 표시 및 실시간 반경 원
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
         const circle = new kakao.maps.Circle({
-          radius: 1000,  // 1km 반경
           center: currentPos,
           radius: 20,
-          // strokeWeight: 2,
-          // strokeColor: '#00f',
-          // strokeOpacity: 0.8,
-          fillColor: '#888',
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
           fillOpacity: 0.3,
           zIndex: 10
         });
         circle.setMap(map);
         map.setCenter(currentPos);
-currentLocation = currentPos;
-if (rangeCircle) rangeCircle.setMap(null);
-rangeCircle = new kakao.maps.Circle({
-  center: currentLocation,
-  radius: 1000,
-  fillColor: '#888',
-  fillOpacity: 0.3,
-  strokeWeight: 0
-});
-rangeCircle.setMap(map);
-db.once('value');
+
+        // 1km 반경 원
+        const boundary = new kakao.maps.Circle({
+          center: currentPos,
+          radius: 1000,
+          strokeWeight: 0,
+          fillColor: "#fff",
+          fillOpacity: 0.07,
+          zIndex: 5
+        });
+        boundary.setMap(map);
       });
     }
   </script>

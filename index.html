@@ -88,6 +88,7 @@
         areaCircle.setMap(map);
 
         map.setCenter(currentPos);
+        fetchMarkers(currentPos);
       });
     }
   </script>
@@ -121,6 +122,7 @@
         areaCircle.setMap(map);
 
         map.setCenter(currentPos);
+        fetchMarkers(currentPos);
       });
     }
   </script>
@@ -154,6 +156,7 @@
         areaCircle.setMap(map);
 
         map.setCenter(currentPos);
+        fetchMarkers(currentPos);
       });
     }
   </script>
@@ -206,7 +209,6 @@
       Object.entries(data).forEach(([key, v]) => {
         const marker = new kakao.maps.Marker({
           map,
-          opacity: opacity,
           position: new kakao.maps.LatLng(v.lat, v.lng),
         });
         kakao.maps.event.addListener(marker, 'click', () => {
@@ -272,6 +274,7 @@
         areaCircle.setMap(map);
 
         map.setCenter(currentPos);
+        fetchMarkers(currentPos);
       });
     }
   </script>

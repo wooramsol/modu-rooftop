@@ -1,268 +1,164 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>모두의옥상 v1.0</title>
-
-
-
-<style>
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
-      background: #000; color: #fff;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모두의옥상 v1.0</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: #000;
+      color: #fff;
       overflow: hidden;
     }
-    #map { width: 100%; height: 100%; filter: grayscale(1); }
     #header {
-      z-index: 9999;
-      position: absolute; top: 0; width: 100%; height: 56px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-      font-size: 17px; font-weight: 600; z-index: 999;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    #modal {
-      max-width: 360px;
-      width: 90vw;
-      left: 50%;
-      transform: translateX(-50%);
-      position: absolute; bottom: -100%; left: 50%; transform: translateX(-50%);
-      width: 90%; max-width: 360px; background: #111; border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.5); padding: 16px;
-      transition: bottom 0.3s ease-out; z-index: 1000;
-      display: flex; flex-direction: column;
-    }
-    #modal.show { bottom: 0; }
-    #modal textarea {
-      box-sizing: border-box;
+      position: fixed;
+      top: 0;
       width: 100%;
-      margin: 0;
-      height: 80px;
-      line-height: 1.4;
-      width: 100%; background: #000; color: #fff;
-      border: 1px solid #444; border-radius: 8px; padding: 8px;
-      resize: none; font-size: 14px;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 12px 0;
+      font-weight: bold;
+      font-size: 18px;
+      z-index: 10;
     }
-    #modal .buttons {
-      display: flex; gap: 8px; margin-top: 12px;
+    #map {
+      width: 100%;
+      height: 100%;
     }
-    #modal button {
-      padding: 10px 0;
-      border-radius: 10px;
-      flex: 1; padding: 10px; border: none; border-radius: 10px;
-      font-size: 15px; font-weight: 500;
+    #inputBox {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: #111;
+      display: flex;
+      z-index: 10;
+    }
+    #commentInput {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      font-size: 14px;
+    }
+    #saveBtn {
+      padding: 8px 12px;
+      background: #fff;
+      color: #000;
+      border: none;
+      margin-left: 6px;
       cursor: pointer;
     }
-    button.save { background: #fff; color: #000; }
-    button.delete { background: #f55; color: #fff; }
-    button.cancel { background: #333; color: #fff; }
   </style>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42">
-    // 현재 위치 표시
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        const circle = new kakao.maps.Circle({
-          center: currentPos,
-          radius: 20,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.3,
-          zIndex: 10
-        });
-        circle.setMap(map);
-        map.setCenter(currentPos);
-      });
-    }
-  
-    let userPosition = null;
-    let userCircle = null;
-
-    function updateMarkerStyles() {
-      if (!userPosition) return;
-      Object.entries(markerObjs).forEach(([key, marker]) => {
-        if (!marker) return;
-        const pos = marker.getPosition();
-        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const imageSrc = distance <= 1000
-          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
-          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
-        const markerImage = new kakao.maps.MarkerImage(
-          imageSrc,
-          new kakao.maps.Size(24, 35),
-          { offset: new kakao.maps.Point(12, 35) }
-        );
-        marker.setImage(markerImage);
-      });
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-        userCircle = new kakao.maps.Circle({
-          center: userPosition,
-          radius: 1000,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.1,
-          zIndex: 10
-        });
-        userCircle.setMap(map);
-        map.setCenter(userPosition);
-
-        updateMarkerStyles();
-      }, function(error) {
-        console.log("GPS 권한 오류:", error.message);
-      });
-    } else {
-      console.log("브라우저가 geolocation을 지원하지 않음");
-    }
-  </script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
-    // 현재 위치 표시
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        const circle = new kakao.maps.Circle({
-          center: currentPos,
-          radius: 20,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.3,
-          zIndex: 10
-        });
-        circle.setMap(map);
-        map.setCenter(currentPos);
-      });
-    }
-  
-    let userPosition = null;
-    let userCircle = null;
-
-    function updateMarkerStyles() {
-      if (!userPosition) return;
-      Object.entries(markerObjs).forEach(([key, marker]) => {
-        if (!marker) return;
-        const pos = marker.getPosition();
-        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const imageSrc = distance <= 1000
-          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
-          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
-        const markerImage = new kakao.maps.MarkerImage(
-          imageSrc,
-          new kakao.maps.Size(24, 35),
-          { offset: new kakao.maps.Point(12, 35) }
-        );
-        marker.setImage(markerImage);
-      });
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-        userCircle = new kakao.maps.Circle({
-          center: userPosition,
-          radius: 1000,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.1,
-          zIndex: 10
-        });
-        userCircle.setMap(map);
-        map.setCenter(userPosition);
-
-        updateMarkerStyles();
-      }, function(error) {
-        console.log("GPS 권한 오류:", error.message);
-      });
-    } else {
-      console.log("브라우저가 geolocation을 지원하지 않음");
-    }
-  </script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
-    // 현재 위치 표시
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        const circle = new kakao.maps.Circle({
-          center: currentPos,
-          radius: 20,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.3,
-          zIndex: 10
-        });
-        circle.setMap(map);
-        map.setCenter(currentPos);
-      });
-    }
-  
-    let userPosition = null;
-    let userCircle = null;
-
-    function updateMarkerStyles() {
-      if (!userPosition) return;
-      Object.entries(markerObjs).forEach(([key, marker]) => {
-        if (!marker) return;
-        const pos = marker.getPosition();
-        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
-        const imageSrc = distance <= 1000
-          ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png"
-          : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_grey.png";
-        const markerImage = new kakao.maps.MarkerImage(
-          imageSrc,
-          new kakao.maps.Size(24, 35),
-          { offset: new kakao.maps.Point(12, 35) }
-        );
-        marker.setImage(markerImage);
-      });
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-        userCircle = new kakao.maps.Circle({
-          center: userPosition,
-          radius: 1000,
-          strokeWeight: 2,
-          strokeColor: '#00f',
-          strokeOpacity: 0.8,
-          fillColor: '#00f',
-          fillOpacity: 0.1,
-          zIndex: 10
-        });
-        userCircle.setMap(map);
-        map.setCenter(userPosition);
-
-        updateMarkerStyles();
-      }, function(error) {
-        console.log("GPS 권한 오류:", error.message);
-      });
-    } else {
-      console.log("브라우저가 geolocation을 지원하지 않음");
-    }
-  </script>
 </head>
 <body>
-<div id="header">모두의옥상 v1.0</div>
-<div id="map"></div>
+  <div id="header">모두의옥상 v1.0</div>
+  <div id="map"></div>
+  <div id="inputBox">
+    <input type="text" id="commentInput" placeholder="이 옥상에서 어떤 풍경이 보이나요?" />
+    <button id="saveBtn" onclick="saveComment()">저장</button>
+  </div>
 
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js" type="module"></script>
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42&libraries=services"></script>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCq0HfajMY_GpKQ_KsdSNJmOy99PY97O2A",
+      authDomain: "modulooptop.firebaseapp.com",
+      databaseURL: "https://modulooptop-default-rtdb.firebaseio.com",
+      projectId: "modulooptop",
+      storageBucket: "modulooptop.appspot.com",
+      messagingSenderId: "901771492678",
+      appId: "1:901771492678:web:23b0cc4478cade894ab947"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let map, userMarker, userCircle;
+    let userLatLng = null;
+    const markers = [];
+
+    function initMap() {
+      navigator.geolocation.getCurrentPosition(pos => {
+        userLatLng = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        map = new kakao.maps.Map(document.getElementById('map'), {
+          center: userLatLng,
+          level: 5
+        });
+
+        userMarker = new kakao.maps.Marker({ position: userLatLng });
+        userMarker.setMap(map);
+
+        userCircle = new kakao.maps.Circle({
+          center: userLatLng,
+          radius: 1000,
+          strokeWeight: 1,
+          strokeColor: '#fff',
+          strokeOpacity: 0.8,
+          fillColor: '#444',
+          fillOpacity: 0.3
+        });
+        userCircle.setMap(map);
+
+        loadMarkers();
+      }, err => {
+        alert("위치 접근이 필요합니다.");
+      });
+    }
+
+    function loadMarkers() {
+      const markerRef = ref(db, "markers/");
+      onChildAdded(markerRef, (data) => {
+        const { lat, lng, comment } = data.val();
+        const markerPosition = new kakao.maps.LatLng(lat, lng);
+        const distance = userLatLng ? kakao.maps.services.Util.getDistance(userLatLng, markerPosition) : 0;
+
+        const marker = new kakao.maps.Marker({
+          position: markerPosition,
+          map: map,
+          image: new kakao.maps.MarkerImage(
+            'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+            new kakao.maps.Size(24, 35),
+            { offset: new kakao.maps.Point(12, 35) }
+          )
+        });
+
+        marker.setOpacity(distance <= 1000 ? 1 : 0.3);
+        markers.push(marker);
+      });
+    }
+
+    window.saveComment = () => {
+      const comment = document.getElementById("commentInput").value;
+      if (!comment || !userLatLng) return;
+      push(ref(db, "markers/"), {
+        lat: userLatLng.getLat(),
+        lng: userLatLng.getLng(),
+        comment
+      });
+      document.getElementById("commentInput").value = "";
+    };
+
+    window.onload = initMap;
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log("✅ Service Worker 등록 성공", reg))
+        .catch(err => console.error("❌ Service Worker 등록 실패", err));
+    }
+  </script>
 </body>
 </html>

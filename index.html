@@ -78,7 +78,44 @@
         map.setCenter(currentPos);
       });
     }
+  
+    let userPosition = null;
+
+    function updateMarkerStyles() {
+      Object.entries(markerObjs).forEach(([key, marker]) => {
+        const pos = marker.getPosition();
+        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
+        const color = distance <= 1000 ? "#000" : "#777";
+        marker.setImage(new kakao.maps.MarkerImage(
+          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
+          new kakao.maps.Size(32, 32),
+          { offset: new kakao.maps.Point(16, 32) }
+        ));
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        const circle = new kakao.maps.Circle({
+          center: userPosition,
+          radius: 500,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.1,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(userPosition);
+
+        updateMarkerStyles();
+      });
+    }
   </script>
+
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
     // 현재 위치 표시
@@ -99,7 +136,44 @@
         map.setCenter(currentPos);
       });
     }
+  
+    let userPosition = null;
+
+    function updateMarkerStyles() {
+      Object.entries(markerObjs).forEach(([key, marker]) => {
+        const pos = marker.getPosition();
+        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
+        const color = distance <= 1000 ? "#000" : "#777";
+        marker.setImage(new kakao.maps.MarkerImage(
+          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
+          new kakao.maps.Size(32, 32),
+          { offset: new kakao.maps.Point(16, 32) }
+        ));
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        const circle = new kakao.maps.Circle({
+          center: userPosition,
+          radius: 500,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.1,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(userPosition);
+
+        updateMarkerStyles();
+      });
+    }
   </script>
+
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
     // 현재 위치 표시
@@ -120,7 +194,44 @@
         map.setCenter(currentPos);
       });
     }
+  
+    let userPosition = null;
+
+    function updateMarkerStyles() {
+      Object.entries(markerObjs).forEach(([key, marker]) => {
+        const pos = marker.getPosition();
+        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
+        const color = distance <= 1000 ? "#000" : "#777";
+        marker.setImage(new kakao.maps.MarkerImage(
+          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
+          new kakao.maps.Size(32, 32),
+          { offset: new kakao.maps.Point(16, 32) }
+        ));
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        const circle = new kakao.maps.Circle({
+          center: userPosition,
+          radius: 500,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.1,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(userPosition);
+
+        updateMarkerStyles();
+      });
+    }
   </script>
+
 
 </head>
 <body>
@@ -177,6 +288,7 @@
           openModal(v.comment, key);
         });
         markerObjs[key] = marker;
+        if (userPosition) updateMarkerStyles();
       });
     });
 
@@ -225,7 +337,44 @@
         map.setCenter(currentPos);
       });
     }
+  
+    let userPosition = null;
+
+    function updateMarkerStyles() {
+      Object.entries(markerObjs).forEach(([key, marker]) => {
+        const pos = marker.getPosition();
+        const distance = kakao.maps.geometry.spherical.computeDistance(userPosition, pos);
+        const color = distance <= 1000 ? "#000" : "#777";
+        marker.setImage(new kakao.maps.MarkerImage(
+          "https://via.placeholder.com/32/" + color.slice(1) + "/ffffff?text=.",
+          new kakao.maps.Size(32, 32),
+          { offset: new kakao.maps.Point(16, 32) }
+        ));
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        const circle = new kakao.maps.Circle({
+          center: userPosition,
+          radius: 500,
+          strokeWeight: 2,
+          strokeColor: '#00f',
+          strokeOpacity: 0.8,
+          fillColor: '#00f',
+          fillOpacity: 0.1,
+          zIndex: 10
+        });
+        circle.setMap(map);
+        map.setCenter(userPosition);
+
+        updateMarkerStyles();
+      });
+    }
   </script>
+
 
 </body>
 </html>

@@ -96,7 +96,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map); // 항상 지도에 마커 표시
+        marker.setMap(map);
       });
     }
 
@@ -160,7 +160,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map); // 항상 지도에 마커 표시
+        marker.setMap(map);
       });
     }
 
@@ -224,7 +224,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map); // 항상 지도에 마커 표시
+        marker.setMap(map);
       });
     }
 
@@ -307,7 +307,17 @@
         });
         markerObjs[key] = marker;
         marker.setMap(map);
-        if (userPosition) updateMarkerStyles();
+        if (userPosition) {
+          updateMarkerStyles();
+        } else {
+          const defaultImage = new kakao.maps.MarkerImage(
+            "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_black.png",
+            new kakao.maps.Size(24, 35),
+            { offset: new kakao.maps.Point(12, 35) }
+          );
+          marker.setImage(defaultImage);
+        }
+
       });
     });
 
@@ -374,7 +384,7 @@
           { offset: new kakao.maps.Point(12, 35) }
         );
         marker.setImage(markerImage);
-        marker.setMap(map); // 항상 지도에 마커 표시
+        marker.setMap(map);
       });
     }
 

@@ -6,14 +6,13 @@
   <title>모두의옥상 v1.0</title>
   <link rel="manifest" href="manifest.json" />
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       background: #000;
       color: #fff;
-      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     #header {
       position: fixed;
@@ -22,9 +21,8 @@
       background: #000;
       color: #fff;
       text-align: center;
-      padding: 12px 0;
-      font-weight: bold;
-      font-size: 18px;
+      padding: 12px;
+      font-size: 16px;
       z-index: 10;
     }
     #map {
@@ -34,11 +32,10 @@
     #inputBox {
       position: fixed;
       bottom: 0;
-      left: 0;
       width: 100%;
-      padding: 10px;
       background: #111;
       display: flex;
+      padding: 10px;
       z-index: 10;
     }
     #commentInput {
@@ -65,14 +62,13 @@
     <button id="saveBtn" onclick="saveComment()">저장</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js" type="module"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js" type="module"></script>
+  <!-- Firebase (non-module) -->
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+  <!-- Kakao Map -->
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a291afa9e1279e14eb5da1ad2a9f9c42&libraries=services"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCq0HfajMY_GpKQ_KsdSNJmOy99PY97O2A",
       authDomain: "modulooptop.firebaseapp.com",
@@ -82,82 +78,75 @@
       messagingSenderId: "901771492678",
       appId: "1:901771492678:web:23b0cc4478cade894ab947"
     };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    let map, userMarker, userCircle;
-    let userLatLng = null;
+    let map, userLatLng = null, userMarker, userCircle;
     const markers = [];
 
     function initMap() {
-      navigator.geolocation.getCurrentPosition(pos => {
-        userLatLng = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-        map = new kakao.maps.Map(document.getElementById('map'), {
-          center: userLatLng,
-          level: 5
-        });
-
-        userMarker = new kakao.maps.Marker({ position: userLatLng });
-        userMarker.setMap(map);
-
-        userCircle = new kakao.maps.Circle({
-          center: userLatLng,
-          radius: 1000,
-          strokeWeight: 1,
-          strokeColor: '#fff',
-          strokeOpacity: 0.8,
-          fillColor: '#444',
-          fillOpacity: 0.3
-        });
-        userCircle.setMap(map);
-
-        loadMarkers();
-      }, err => {
-        alert("위치 접근이 필요합니다.");
+      const fallbackLatLng = new kakao.maps.LatLng(37.5665, 126.9780); // 서울시청
+      map = new kakao.maps.Map(document.getElementById('map'), {
+        center: fallbackLatLng,
+        level: 5
       });
+
+      // Try to get user location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLatLng = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+          map.setCenter(userLatLng);
+          userMarker = new kakao.maps.Marker({ position: userLatLng });
+          userMarker.setMap(map);
+
+          userCircle = new kakao.maps.Circle({
+            center: userLatLng,
+            radius: 1000,
+            strokeWeight: 1,
+            strokeColor: '#fff',
+            strokeOpacity: 0.8,
+            fillColor: '#444',
+            fillOpacity: 0.3
+          });
+          userCircle.setMap(map);
+        });
+      }
+
+      loadMarkers();
     }
 
     function loadMarkers() {
-      const markerRef = ref(db, "markers/");
-      onChildAdded(markerRef, (data) => {
-        const { lat, lng, comment } = data.val();
-        const markerPosition = new kakao.maps.LatLng(lat, lng);
-        const distance = userLatLng ? kakao.maps.services.Util.getDistance(userLatLng, markerPosition) : 0;
-
+      const markerRef = db.ref("markers/");
+      markerRef.on("child_added", snapshot => {
+        const { lat, lng, comment } = snapshot.val();
+        const markerPos = new kakao.maps.LatLng(lat, lng);
         const marker = new kakao.maps.Marker({
-          position: markerPosition,
+          position: markerPos,
           map: map,
-          image: new kakao.maps.MarkerImage(
-            'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-            new kakao.maps.Size(24, 35),
-            { offset: new kakao.maps.Point(12, 35) }
-          )
+          opacity: userLatLng ? (kakao.maps.services.Util.getDistance(userLatLng, markerPos) <= 1000 ? 1 : 0.3) : 1
         });
-
-        marker.setOpacity(distance <= 1000 ? 1 : 0.3);
         markers.push(marker);
       });
     }
 
-    window.saveComment = () => {
+    function saveComment() {
       const comment = document.getElementById("commentInput").value;
-      if (!comment || !userLatLng) return;
-      push(ref(db, "markers/"), {
+      if (!userLatLng || !comment) return;
+      db.ref("markers/").push({
         lat: userLatLng.getLat(),
         lng: userLatLng.getLng(),
-        comment
+        comment: comment
       });
       document.getElementById("commentInput").value = "";
-    };
+    }
 
     window.onload = initMap;
+    window.saveComment = saveComment;
   </script>
 
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log("✅ Service Worker 등록 성공", reg))
-        .catch(err => console.error("❌ Service Worker 등록 실패", err));
+      navigator.serviceWorker.register('service-worker.js');
     }
   </script>
 </body>

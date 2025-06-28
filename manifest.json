@@ -1,10 +1,10 @@
 {
-  "name": "모두의옥상",
+  "name": "모두의 옥상",
   "short_name": "옥상",
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#000",
-  "theme_color": "#000",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "icon-192.png",
